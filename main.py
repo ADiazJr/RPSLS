@@ -25,3 +25,7 @@
 #   - computer(child)
 #   - human(child)
 # game 
+from human import Human
+
+player_1 = Human('P1')
+player_1.select()
