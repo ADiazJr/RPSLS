@@ -25,7 +25,7 @@
 #   - computer(child)
 #   - human(child)
 # game 
-from human import Human
+from ai_computer import AI_Computer
 
-player_1 = Human('P1')
-player_1.select()
+computer_player = AI_Computer("Computer")
+computer_player.random_selection()
