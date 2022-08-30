@@ -6,12 +6,12 @@ class Game():
     def __init__(self):
         self.player = Human('P1')
         self.rounds = 0
-        self.players = ''
         self.player_2= Human('P2')
         self.computer = AI_Computer('computer')
-        self.current_round = 1
+        self.current_round = 0
         self.player_points = 0
         self.player_2_points = 0
+        self.winner = None
     
     def display_welcome(self):
         print('''Welcome to RPSLS. This are the game rules:
@@ -29,22 +29,27 @@ class Game():
     def run_game(self):
         self.display_welcome()
         result = self.single_or_multiplayer()
-        #while self.current_round < self.rounds:
-        self.choose_gesture(result)
-        self.compare_gesture()
-        print(self.player_2_points)
-        print(self.player_points)
+        self.choose_rounds()
+        while self.current_round < self.rounds:
+            self.current_round += 1
+            self.choose_gesture(result)
+            round_winner = self.compare_gesture(result)
+            self.determine_winner_round(round_winner)
+        self.determine_game_won()
+        self.display_winner()
 
 
     def choose_rounds(self):
-        self.rounds = input('Enter the number of rounds, minimum three rounds: ')
+        while self.rounds < 3:
+            self.rounds = int(input('Enter the number of rounds, minimum three rounds: '))
         
     def single_or_multiplayer(self):
-        self.players = input('Choose to play with human or computer: ')
-        if self.players == 'computer':
+        players = input('Choose to play with human or computer: ')
+        if players == 'computer':
             return self.computer
-        if self.players == 'human':
+        if players == 'human':
             return self.player_2
+
     def choose_gesture(self, result):
         self.player.select()
         if result == self.computer:
@@ -53,140 +58,119 @@ class Game():
             self.player_2.select()
 
     def compare_gesture(self, result):
+        '''
+        Comparison of gestures between principal player and player2 as human
+        '''
         if result == self.player_2:
             if self.player.gesture == self.player_2.gesture:
-                print('tie')
-                self.current_round -= 1
-                if self.player.gesture == "Rock" and self.player_2.gesture == "Scissors":
-                    self.player_points += 1
-            # Rock crushes Scissors
-                elif self.player.gesture == "Scissors" and self.player_2.gesture == "Paper":
-                    self.player_points += 1
-            # Scissors cuts Paper
-                elif self.player.gesture == "Paper" and self.player_2.gesture == "Rock":
-                    self.player_points += 1
-            # Paper covers Rock
-                elif self.player.gesture == "Rock" and self.player_2.gesture == "Lizard":
-                    self.player_points += 1
-            # Rock crushes Lizard
-                elif self.player.gesture == "Lizard" and self.player_2.gesture == "Spock":
-                    self.player_points += 1             
-            # Lizard poisons Spock
-                elif self.player.gesture == "Spock" and self.player_2.gesture == "Scissors":
-                    self.player_points += 1
-            # Spock smashes Scissors
-                elif self.player.gesture == "Scissors" and self.player_2.gesture == "Lizard":
-                    self.player_points += 1
-            # Scissors decapitates Lizard
-                elif self.player.gesture == "Lizard" and self.player_2.gesture == "Paper":
-                    self.player_points += 1
-            # Lizard eats Paper
-                elif self.player.gesture == "Paper" and self.player_2.gesture == "Spock":
-                    self.player_points += 1
-            # Paper disproves Spock 
-                elif self.player.gesture == "Spock" and self.player_2.gesture == "Rock":
-                    self.player_points += 1
-            # Spock vaporizes Rock
-                elif self.player_2.gesture == "Rock" and self.player.gesture == "Scissors":
-                    self.player_2_points += 1
-            # Rock crushes Scissors
-                elif self.player_2.gesture == "Scissors" and self.player.gesture == "Paper":
-                    self.player_2_points += 1
-            # Scissors cuts Paper
-                elif self.player_2.gesture == "Paper" and self.player.gesture == "Rock":
-                    self.player_2_points += 1
-            # Paper covers Rock
-                elif self.player_2.gesture == "Rock" and self.player.gesture == "Lizard":
-                    self.player_2_points += 1
-            # Rock crushes Lizard
-                elif self.player_2.gesture == "Lizard" and self.player.gesture == "Spock":
-                    self.player_2_points += 1             
-            # Lizard poisons Spock
-                elif self.player_2.gesture == "Spock" and self.player.gesture == "Scissors":
-                    self.player_2_points += 1
-            # Spock smashes Scissors
-                elif self.player_2.gesture == "Scissors" and self.player.gesture == "Lizard":
-                    self.player_2_points += 1
-            # Scissors decapitates Lizard
-                elif self.player_2.gesture == "Lizard" and self.player.gesture == "Paper":
-                    self.player_2_points += 1
-            # Lizard eats Paper
-                elif self.player_2.gesture == "Paper" and self.player.gesture == "Spock":
-                    self.player_2_points += 1
-            # Paper disproves Spock 
-                elif self.player_2.gesture == "Spock" and self.player.gesture == "Rock":
-                    self.player_2_points += 1
-            # Spock vaporizes Rock
-        elif result == self.computer:
+                return None
+            if self.player.gesture == "Rock" and self.player_2.gesture == "Scissors":
+                return self.player
+            elif self.player.gesture == "Scissors" and self.player_2.gesture == "Paper":
+                return self.player
+            elif self.player.gesture == "Paper" and self.player_2.gesture == "Rock":
+                return self.player
+            elif self.player.gesture == "Rock" and self.player_2.gesture == "Lizard":
+                return self.player
+            elif self.player.gesture == "Lizard" and self.player_2.gesture == "Spock":
+                return self.player             
+            elif self.player.gesture == "Spock" and self.player_2.gesture == "Scissors":
+                return self.player
+            elif self.player.gesture == "Scissors" and self.player_2.gesture == "Lizard":
+                return self.player
+            elif self.player.gesture == "Lizard" and self.player_2.gesture == "Paper":
+                return self.player
+            elif self.player.gesture == "Paper" and self.player_2.gesture == "Spock":
+                return self.player
+            elif self.player.gesture == "Spock" and self.player_2.gesture == "Rock":
+                return self.player
+            elif self.player_2.gesture == "Rock" and self.player.gesture == "Scissors":
+                return self.player_2
+            elif self.player_2.gesture == "Scissors" and self.player.gesture == "Paper":
+                return self.player_2
+            elif self.player_2.gesture == "Paper" and self.player.gesture == "Rock":
+                return self.player_2
+            elif self.player_2.gesture == "Rock" and self.player.gesture == "Lizard":
+                return self.player_2
+            elif self.player_2.gesture == "Lizard" and self.player.gesture == "Spock":
+                return self.player_2             
+            elif self.player_2.gesture == "Spock" and self.player.gesture == "Scissors":
+                return self.player_2
+            elif self.player_2.gesture == "Scissors" and self.player.gesture == "Lizard":
+                return self.player_2
+            elif self.player_2.gesture == "Lizard" and self.player.gesture == "Paper":
+                return self.player_2
+            elif self.player_2.gesture == "Paper" and self.player.gesture == "Spock":
+                return self.player_2
+            elif self.player_2.gesture == "Spock" and self.player.gesture == "Rock":
+                return self.player_2
+        '''
+        Comparison of gestures between principal player and player2 as computer
+        '''       
+        if result == self.computer:
             if self.player.gesture == self.computer.gesture:
-                print('tie')
-                self.current_round -= 1
+                return None
             if self.player.gesture == "Rock" and self.computer.gesture == "Scissors":
-                self.player_points += 1
-        # Rock crushes Scissors
+                return self.player
             elif self.player.gesture == "Scissors" and self.computer.gesture == "Paper":
-                self.player_points += 1
-        # Scissors cuts Paper
+                return self.player
             elif self.player.gesture == "Paper" and self.computer.gesture == "Rock":
-                self.player_points += 1
-        # Paper covers Rock
+                return self.player
             elif self.player.gesture == "Rock" and self.computer.gesture == "Lizard":
-                self.player_points += 1
-        # Rock crushes Lizard
+                return self.player
             elif self.player.gesture == "Lizard" and self.computer.gesture == "Spock":
-                self.player_points += 1             
-        # Lizard poisons Spock
+                return self.player             
             elif self.player.gesture == "Spock" and self.computer.gesture == "Scissors":
-                self.player_points += 1
-        # Spock smashes Scissors
+                return self.player
             elif self.player.gesture == "Scissors" and self.computer.gesture == "Lizard":
-                self.player_points += 1
-        # Scissors decapitates Lizard
+                return self.player
             elif self.player.gesture == "Lizard" and self.computer.gesture == "Paper":
-                self.player_points += 1
-        # Lizard eats Paper
+                return self.player
             elif self.player.gesture == "Paper" and self.computer.gesture == "Spock":
-                self.player_points += 1
-        # Paper disproves Spock 
+                return self.player
             elif self.player.gesture == "Spock" and self.computer.gesture == "Rock":
-                self.player_points += 1
-        # Spock vaporizes Rock
+                return self.player
             elif self.computer.gesture == "Rock" and self.player.gesture == "Scissors":
-                self.player_2_points += 1
-        # Rock crushes Scissors
+                return self.player_2
             elif self.computer.gesture == "Scissors" and self.player.gesture == "Paper":
-                self.player_2_points += 1
-        # Scissors cuts Paper
+                return self.player_2
             elif self.computer.gesture == "Paper" and self.player.gesture == "Rock":
-                self.player_2_points += 1
-        # Paper covers Rock
+                return self.player_2
             elif self.computer.gesture == "Rock" and self.player.gesture == "Lizard":
-                self.player_2_points += 1
-        # Rock crushes Lizard
+                return self.player_2
             elif self.computer.gesture == "Lizard" and self.player.gesture == "Spock":
-                self.player_2_points += 1             
-        # Lizard poisons Spock
+                return self.player_2             
             elif self.computer.gesture == "Spock" and self.player.gesture == "Scissors":
-                self.player_2_points += 1
-        # Spock smashes Scissors
+                return self.player_2
             elif self.computer.gesture == "Scissors" and self.player.gesture == "Lizard":
-                self.player_2_points += 1
-        # Scissors decapitates Lizard
+                return self.player_2
             elif self.computer.gesture == "Lizard" and self.player.gesture == "Paper":
-                self.player_2_points += 1
-        # Lizard eats Paper
+                return self.player_2
             elif self.computer.gesture == "Paper" and self.player.gesture == "Spock":
-                self.player_2_points += 1
-        # Paper disproves Spock 
+                return self.player_2
             elif self.computer.gesture == "Spock" and self.player.gesture == "Rock":
-                self.player_2_points += 1
-        # Spock vaporizes Rock
+                return self.player_2
 
-    def determine_winner_round(self):
-        pass
+    def determine_winner_round(self, round_winner):
+        if round_winner == self.player:
+            self.player_points += 1
+            print(f'Winner of the round: {self.player.name}')
+        elif round_winner == self.player_2:
+            self.player_2_points += 1
+            print(f'Winner of the round: {self.player_2.name}')
+        else:
+            print('Tied')
 
     def determine_game_won(self):
-        pass
+        half = self.rounds // 2
+        if self.player_points > half:
+            self.winner = self.player
+        elif self.player_2_points > half:
+            self.winner = self.player_2
+
 
     def display_winner(self):
-        pass
+        if self.winner == None:
+            print('No winner')
+        else:
+            print(f'Winner of the game {self.winner.name}')
